@@ -20,7 +20,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import CodeIcon from "@mui/icons-material/Code";
 import DescriptionIcon from "@mui/icons-material/Description";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { toast } from "react-toastify";
+import { useToast } from "../../Utils/Toast/ToastContext";
 
 // Existing components
 import Sidebar from "../Sidebar/Sidebar";
@@ -31,6 +31,7 @@ const drawerWidth = 240;
 const AddDepartment = () => {
     const theme = useTheme();
     const navigate = useNavigate();
+    const toast = useToast();
 
     // Layout states
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);

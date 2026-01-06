@@ -25,7 +25,7 @@ import {
 
 import Sidebar from "../Sidebar/Sidebar";
 import Header from "../Header/Header";
-import { toast } from "react-toastify";
+import { useToast } from "../../Utils/Toast/ToastContext";
 
 /* ---------------- Reusable Input Wrapper ---------------- */
 const GlassInput = ({ icon, children }) => (
@@ -73,6 +73,7 @@ const GlassInput = ({ icon, children }) => (
 
 const AddEmployee = () => {
   const theme = useTheme();
+  const toast = useToast();
 
   /* ---------------- Layout ---------------- */
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -104,7 +105,7 @@ const AddEmployee = () => {
     mobile: "",
     designation: "",
     date_of_joining: "",
-  });  
+  });
 
   const [saving, setSaving] = useState(false);
 
