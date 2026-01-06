@@ -1,74 +1,60 @@
-// import React from "react";
-// import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-// import LoginPage from "./Components/Login/LoginPage";
-// import AdminPage from "./Components/AdminDashboard/Admin"; // adjust path if needed
-// import "./App.css";
 
-// function App() {
-//   return (
-    
-//     <Router>
-//       <Routes>
-//         {/* ✅ Login Page at "/" */}
-//         <Route path="/" element={<LoginPage />} />
-
-//         {/* ✅ Admin Page after login */}
-//         <Route path="/admin" element={<AdminPage />} />
-
-//         {/* ✅ Redirect unknown routes to login */}
-//         <Route path="*" element={<Navigate to="/" />} />
-//       </Routes>
-//     </Router>
-//   );
-// }
-
-// export default App;
 
 
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./Components/Login/LoginPage";
-import AdminPage from "./Components/AdminDashboard/Admin"; // adjust path if needed
-import ManageEmployee from "./Components/ManageEmployee/ManageEmployee"; // New import
-import AddEmployee from "./Components/ManageEmployee/AddEmployee"; // New import
+import AdminPage from "./Components/AdminDashboard/Admin"; 
+import ManageEmployee from "./Components/ManageEmployee/ManageEmployee"; 
+import AddEmployee from "./Components/ManageEmployee/AddEmployee"; 
+import ManageDepartment from "./Components/ManageDepartments/ManageDepartments"; 
+import AddDepartment from "./Components/ManageDepartments/AddDepartment"; 
+import PendingLists from "./Components/PendingApproveList/PendingLists"; 
 import "./App.css";
 
 import { ToastProvider } from './Utils/Toast/ToastContext';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#dc004e',
-    },
-  },
-});
+import theme from './theme'; 
+import LeaveRequest from "./Components/LeaveRequest/LeaveRequest";
+import OnDutyRequest from "./Components/OnDutyRequest/OnDutyRequest";
 
 function App() {
   return (
-     <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
       <ToastProvider>
-    <Router>
-      <Routes>
-        
-        <Route path="/login" element={<LoginPage />} />
+        <Router>
+          <Routes>
 
-       
-        <Route path="/admin" element={<AdminPage />} />
+            
+           
+            <Route path="/login" element={<LoginPage />} />
 
-        
-        <Route path="/employee" element={<ManageEmployee />} /> 
+           
+            <Route path="/admin" element={<AdminPage />} />
 
-        <Route path="/employees/add" element={<AddEmployee />} /> 
-        <Route path="*" element={<LoginPage />} />
-      </Routes>
-    </Router>
-    </ToastProvider>
+            
+            <Route path="/employee" element={<ManageEmployee />} />
+
+            <Route path="/employees/add" element={<AddEmployee />} />
+
+            <Route path="/department" element={<ManageDepartment />} />
+
+             <Route path="/department/add" element={<AddDepartment />} />
+
+            <Route path="/approval" element={<PendingLists />} />
+
+            <Route path="/leave" element={<LeaveRequest />} />
+
+            <Route path="/onduty" element={<OnDutyRequest />} />
+             
+             <Route path="*" element={<LoginPage />} />
+
+
+          </Routes>
+        </Router>
+      </ToastProvider>
     </ThemeProvider>
   );
 }
