@@ -8,8 +8,8 @@
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-  background: #0f172a;
-  color: white;
+  background: var(--bg-color);
+  color: var(--text-main);
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -23,6 +23,7 @@ body {
 * {
   -webkit-tap-highlight-color: transparent;
 }
+
 /* Add these to src/App.css */
 
 /* Custom scrollbar */
@@ -32,17 +33,17 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: rgba(22, 151, 166, 0.1);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: var(--french-blue);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1;
+  background: var(--turquoise-surf);
 }
 
 /* Smooth transitions */
@@ -58,6 +59,7 @@ body {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

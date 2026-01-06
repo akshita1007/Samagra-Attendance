@@ -55,17 +55,17 @@ function App() {
       <ToastProvider>
     <Router>
       <Routes>
-        {/* ✅ Login Page at "/" */}
-        <Route path="/" element={<LoginPage />} />
+        
+        <Route path="/login" element={<LoginPage />} />
 
-        {/* ✅ Admin Page after login */}
+       
         <Route path="/admin" element={<AdminPage />} />
 
-        {/* ✅ Redirect unknown routes to login */}
+        
         <Route path="/employee" element={<ManageEmployee />} /> 
 
         <Route path="/employees/add" element={<AddEmployee />} /> 
-
+        <Route path="*" element={<LoginPage />} />
       </Routes>
     </Router>
     </ToastProvider>

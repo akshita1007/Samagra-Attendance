@@ -19,9 +19,6 @@ import {
   MenuItem,
   ListItemIcon,
   Chip,
-  Snackbar,
-  Alert,
-  Slide,
   Button,
   CircularProgress,
   TextField,
@@ -50,7 +47,6 @@ import {
   AccountCircle as AccountCircleIcon,
   Home as HomeIcon,
   Work as WorkIcon,
-  Close as CloseIcon,
   Download as DownloadIcon,
   PictureAsPdf as PdfIcon,
   TableChart as ExcelIcon,
@@ -78,160 +74,11 @@ import PdfReportGenerator from "../../Utils/Reports/PdfReportGenerator";
 import ExcelReportGenerator from "../../Utils/Reports/ExcelReportGenerator";
 import Header from '../Header/Header';
 
+import { useToast } from '../../Utils/Toast/ToastContext';
 
-// Toast context and provider
-const ToastContext = React.createContext();
+// Toast context and provider removed (using global)
 
-const ToastProvider = ({ children }) => {
-  const [toasts, setToasts] = useState([]);
 
-  const showToast = (message, options = {}) => {
-    const {
-      type = 'info',
-      duration = 5000,
-      title,
-      position = 'top-right'
-    } = options;
-
-    const id = Date.now();
-    const newToast = {
-      id,
-      message,
-      type,
-      duration,
-      title,
-      position
-    };
-
-    setToasts(prev => [...prev, newToast]);
-
-    if (duration !== null) {
-      setTimeout(() => {
-        setToasts(prev => prev.filter(toast => toast.id !== id));
-      }, duration);
-    }
-
-    return id;
-  };
-
-  const removeToast = (id) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
-  };
-
-  const clearAllToasts = () => {
-    setToasts([]);
-  };
-
-  const getPositionStyle = (position) => {
-    const positions = {
-      'top-right': { top: 20, right: 20 },
-      'top-left': { top: 20, left: 20 },
-      'top-center': { top: 20, left: '50%', transform: 'translateX(-50%)' },
-      'bottom-right': { bottom: 20, right: 20 },
-      'bottom-left': { bottom: 20, left: 20 },
-      'bottom-center': { bottom: 20, left: '50%', transform: 'translateX(-50%)' },
-    };
-    return positions[position] || positions['top-right'];
-  };
-
-  return (
-    <ToastContext.Provider value={{ showToast, removeToast, clearAllToasts }}>
-      {children}
-
-      {toasts.map((toast) => {
-        const positionStyle = getPositionStyle(toast.position);
-
-        return (
-          <Box
-            key={toast.id}
-            sx={{
-              position: 'fixed',
-              zIndex: 9999,
-              ...positionStyle,
-              maxWidth: '400px',
-              width: '90%',
-            }}
-          >
-            <Snackbar
-              open={true}
-              anchorOrigin={{
-                vertical: toast.position.includes('top') ? 'top' : 'bottom',
-                horizontal: toast.position.includes('left')
-                  ? 'left'
-                  : toast.position.includes('right')
-                    ? 'right'
-                    : 'center',
-              }}
-              TransitionComponent={(props) => <Slide {...props} direction="left" />}
-            >
-              <Alert
-                severity={toast.type}
-                variant="filled"
-                elevation={6}
-                action={
-                  <IconButton
-                    size="small"
-                    aria-label="close"
-                    color="inherit"
-                    onClick={() => removeToast(toast.id)}
-                    sx={{ ml: 1 }}
-                  >
-                    <CloseIcon fontSize="small" />
-                  </IconButton>
-                }
-                sx={{
-                  width: '100%',
-                  '& .MuiAlert-icon': {
-                    alignItems: 'center',
-                  },
-                  backgroundColor: (theme) => {
-                    const colors = {
-                      success: theme.palette.success.dark,
-                      error: theme.palette.error.dark,
-                      warning: theme.palette.warning.dark,
-                      info: theme.palette.info.dark,
-                    };
-                    return colors[toast.type] || theme.palette.info.dark;
-                  },
-                }}
-              >
-                {toast.title && <strong>{toast.title}</strong>}
-                {toast.title && <br />}
-                {toast.message}
-              </Alert>
-            </Snackbar>
-          </Box>
-        );
-      })}
-    </ToastContext.Provider>
-  );
-};
-
-const useToast = () => {
-  const context = React.useContext(ToastContext);
-  if (!context) {
-    throw new Error('useToast must be used within a ToastProvider');
-  }
-
-  const { showToast, removeToast, clearAllToasts } = context;
-
-  return {
-    showToast,
-    removeToast,
-    clearAllToasts,
-    success: (message, options = {}) =>
-      showToast(message, { ...options, type: 'success' }),
-
-    error: (message, options = {}) =>
-      showToast(message, { ...options, type: 'error' }),
-
-    warning: (message, options = {}) =>
-      showToast(message, { ...options, type: 'warning' }),
-
-    info: (message, options = {}) =>
-      showToast(message, { ...options, type: 'info' }),
-  };
-};
 
 // Main Admin Component
 const Admin = () => {
@@ -323,7 +170,7 @@ const Admin = () => {
       }
 
       const res = await fetch(
-        'http://localhost:4040/qr/departments/adminDashboard',
+        `${import.meta.env.VITE_API_BASE_URL}/departments/adminDashboard`,
         {
           method: 'GET',
           headers: {
@@ -393,7 +240,7 @@ const Admin = () => {
       setShowPresentTable(false);
 
       const res = await fetch(
-        "http://localhost:4040/qr/employees/today-summary?type=absent",
+        `${import.meta.env.VITE_API_BASE_URL}/employees/today-summary?type=absent`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -446,7 +293,7 @@ const Admin = () => {
       setShowAbsentTable(false);
 
       const res = await fetch(
-        "http://localhost:4040/qr/employees/today-summary?type=present",
+        `${import.meta.env.VITE_API_BASE_URL}/employees/today-summary?type=present`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -498,7 +345,7 @@ const Admin = () => {
       setShowAbsentTable(false);
       setShowPresentTable(false);
 
-      const res = await fetch("http://localhost:4040/qr/on-duty", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/on-duty`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -535,7 +382,7 @@ const Admin = () => {
       }
 
       const res = await fetch(
-        "http://localhost:4040/qr/departments/adminDashboard?period=week",
+        `${import.meta.env.VITE_API_BASE_URL}/departments/adminDashboard?period=week`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -589,7 +436,7 @@ const Admin = () => {
         localStorage.getItem("token") || sessionStorage.getItem("token");
 
       const res = await fetch(
-        `http://localhost:4040/qr/departments/adminDashboard?startDate=${customStartDate}&endDate=${customEndDate}`,
+        `${import.meta.env.VITE_API_BASE_URL}/departments/adminDashboard?startDate=${customStartDate}&endDate=${customEndDate}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -642,7 +489,7 @@ const Admin = () => {
       }
 
       const res = await fetch(
-        "http://localhost:4040/qr/departments/adminDashboard?period=month",
+        `${import.meta.env.VITE_API_BASE_URL}/departments/adminDashboard?period=month`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -717,7 +564,7 @@ const Admin = () => {
       // ✅ FETCH DATA BASED ON REPORT TYPE
       if (reportType === "weekly") {
         const res = await fetch(
-          "http://localhost:4040/qr/departments/adminDashboard?period=week",
+          `${import.meta.env.VITE_API_BASE_URL}/departments/adminDashboard?period=week`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -731,7 +578,7 @@ const Admin = () => {
 
       else if (reportType === "monthly") {
         const res = await fetch(
-          "http://localhost:4040/qr/departments/adminDashboard?period=month",
+          `${import.meta.env.VITE_API_BASE_URL}/departments/adminDashboard?period=month`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -754,7 +601,7 @@ const Admin = () => {
         const formattedEnd = moment(endDate).format("YYYY-MM-DD");
 
         const res = await fetch(
-          `http://localhost:4040/qr/departments/adminDashboard?startDate=${formattedStart}&endDate=${formattedEnd}`,
+          `${import.meta.env.VITE_API_BASE_URL}/departments/adminDashboard?startDate=${formattedStart}&endDate=${formattedEnd}`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -856,7 +703,7 @@ const Admin = () => {
       title: 'Present Today',
       value: dashboardData.presentTotal,
       icon: <PresentIcon fontSize="large" />,
-      color: '#4CAF50',
+      color: theme.palette.success.main,
       progress: (dashboardData.presentTotal / totalEmployees) * 100,
       description: 'Employees present',
       onClick: fetchPresentList,
@@ -865,7 +712,7 @@ const Admin = () => {
       title: 'Absent Today',
       value: dashboardData.absentTotal,
       icon: <AbsentIcon fontSize="large" />,
-      color: '#F44336',
+      color: theme.palette.error.main,
       progress: (dashboardData.absentTotal / totalEmployees) * 100,
       description: 'Employees absent',
       onClick: fetchAbsentList,
@@ -874,7 +721,7 @@ const Admin = () => {
       title: 'On Leave Today',
       value: dashboardData.leaveTotal,
       icon: <LeaveIcon fontSize="large" />,
-      color: '#FF9800',
+      color: theme.palette.warning.main,
       progress: (dashboardData.leaveTotal / totalEmployees) * 100,
       description: 'On leave today',
     },
@@ -882,7 +729,7 @@ const Admin = () => {
       title: 'On Duty Today',
       value: dashboardData.pendingOnDutyCount,
       icon: <WorkIcon fontSize="large" />,
-      color: '#2196F3',
+      color: theme.palette.primary.dark,
       progress: (dashboardData.pendingOnDutyCount / totalEmployees) * 100,
       description: 'Employees on duty',
       onClick: fetchOnDutyList, // ✅ ADD THIS
@@ -921,8 +768,8 @@ const Admin = () => {
           handleLogout={handleLogout}
           theme={theme}
         />
-           
-           <Toolbar />
+
+        <Toolbar />
 
         {/* PAGE CONTENT */}
         <Box sx={{ p: 3 }}>
@@ -938,7 +785,8 @@ const Admin = () => {
             sx={{
               p: 3,
               mb: 4,
-              background: 'linear-gradient(135deg, #052b69 0%, #1e88e5 100%)',
+              background: theme.palette.primary.main,
+              backgroundImage: 'linear-gradient(135deg, var(--french-blue) 0%, var(--turquoise-surf) 100%)',
               color: 'white',
               borderRadius: 2,
               position: 'relative',
@@ -1153,10 +1001,10 @@ const Admin = () => {
                 <ReTooltip />
                 <Legend />
 
-                <Bar dataKey="present" fill="#4CAF50" name="Present" />
-                <Bar dataKey="absent" fill="#F44336" name="Absent" />
-                <Bar dataKey="leave" fill="#FF9800" name="On Leave" />
-                <Bar dataKey="onduty" fill="#2196F3" name="On Duty" />
+                <Bar dataKey="present" fill={theme.palette.success.main} name="Present" />
+                <Bar dataKey="absent" fill={theme.palette.error.main} name="Absent" />
+                <Bar dataKey="leave" fill={theme.palette.warning.main} name="On Leave" />
+                <Bar dataKey="onduty" fill={theme.palette.primary.dark} name="On Duty" />
               </BarChart>
             </ResponsiveContainer>
           </Paper>
@@ -1228,7 +1076,7 @@ const Admin = () => {
                 boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
                 overflow: "hidden",
                 position: "relative",
-                background: "linear-gradient(to bottom, #ffffff, #fafafa)",
+                background: "linear-gradient(to bottom, #ffffff, var(--bg-color))",
                 "&::before": {
                   content: '""',
                   position: "absolute",
@@ -1236,7 +1084,7 @@ const Admin = () => {
                   left: 0,
                   right: 0,
                   height: 4,
-                  background: (showAbsentTable ? "linear-gradient(90deg, #f44336, #ff9800)" : "linear-gradient(90deg, #4caf50, #81c784)"),
+                  background: (showAbsentTable ? "linear-gradient(90deg, var(--turquoise-surf), var(--sky-aqua))" : "linear-gradient(90deg, var(--french-blue), var(--blue-green))"),
                 }
               }}
             >
@@ -1246,10 +1094,10 @@ const Admin = () => {
                   sx={{
                     fontWeight: "bold",
                     color: showAbsentTable
-                      ? "#f44336"
+                      ? theme.palette.secondary.dark
                       : showPresentTable
-                        ? "#2e7d32"
-                        : "#1565c0",
+                        ? theme.palette.primary.main
+                        : theme.palette.primary.dark,
                   }}
                 >
                   {showAbsentTable
@@ -1268,8 +1116,8 @@ const Admin = () => {
                       px: 2,
                       py: 0.5,
                       borderRadius: 1,
-                      bgcolor: (showAbsentTable ? '#ffebee' : '#e8f5e9'),
-                      border: `1px solid ${showAbsentTable ? '#ffcdd2' : '#c8e6c9'}`,
+                      bgcolor: (showAbsentTable ? theme.palette.secondary.light + '20' : theme.palette.primary.light + '20'),
+                      border: `1px solid ${showAbsentTable ? theme.palette.secondary.light : theme.palette.primary.light}`,
                     }}
                   >
                     <Box
@@ -1277,10 +1125,10 @@ const Admin = () => {
                         width: 10,
                         height: 10,
                         borderRadius: "50%",
-                        bgcolor: (showAbsentTable ? "#f44336" : "#4caf50")
+                        bgcolor: (showAbsentTable ? theme.palette.secondary.main : theme.palette.primary.main)
                       }}
                     />
-                    <Typography variant="body2" sx={{ fontWeight: 500, color: (showAbsentTable ? "#c62828" : "#2e7d32") }}>
+                    <Typography variant="body2" sx={{ fontWeight: 500, color: (showAbsentTable ? theme.palette.secondary.dark : theme.palette.primary.dark) }}>
                       {(showAbsentTable
                         ? absentData.length
                         : showPresentTable
@@ -1340,10 +1188,10 @@ const Admin = () => {
                             width: 32,
                             height: 32,
                             bgcolor: showAbsentTable
-                              ? "#f44336"
+                              ? theme.palette.secondary.main
                               : showPresentTable
-                                ? "#4caf50"
-                                : "#2196f3",
+                                ? theme.palette.primary.main
+                                : theme.palette.primary.dark,
                             fontSize: "0.875rem"
                           }}
                         >
@@ -1395,7 +1243,7 @@ const Admin = () => {
                           size="small"
                           variant="outlined"
                           sx={{
-                            bgcolor: "#f5f5f5",
+                            bgcolor: theme.palette.background.default,
                             color: "#555",
                             fontWeight: 500,
                             "& .MuiChip-label": { px: 1 }
@@ -1441,10 +1289,10 @@ const Admin = () => {
                   '& .MuiDataGrid-footerContainer': {
                     borderTop: "1px solid #eaeaea",
                     "& .MuiTablePagination-root": {
-                      color: "#555",
+                      color: theme.palette.text.secondary,
                     },
                     "& .MuiIconButton-root": {
-                      color: "#1976d2",
+                      color: theme.palette.primary.main,
                     },
                   },
                 }}
@@ -1724,11 +1572,5 @@ const Admin = () => {
   );
 };
 
-// Export with ToastProvider wrapper
-const AdminWithToast = () => (
-  <ToastProvider>
-    <Admin />
-  </ToastProvider>
-);
-
-export default AdminWithToast;
+// Export Admin directly (wrapped in global ToastProvider)
+export default Admin;
