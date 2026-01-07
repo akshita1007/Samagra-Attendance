@@ -10,7 +10,9 @@ import {
   MenuItem,
   useTheme,
   Toolbar,
+  IconButton, // Added for Back Button
 } from "@mui/material";
+import { useNavigate } from "react-router-dom"; // Added for navigation
 
 import {
   Apartment,
@@ -21,6 +23,7 @@ import {
   Work,
   CalendarMonth,
   Save,
+  ArrowBack as ArrowBackIcon, // Added Icon
 } from "@mui/icons-material";
 
 import Sidebar from "../Sidebar/Sidebar";
@@ -74,12 +77,14 @@ const GlassInput = ({ icon, children }) => (
 const AddEmployee = () => {
   const theme = useTheme();
   const toast = useToast();
+  const navigate = useNavigate(); // Hook for navigation
 
   /* ---------------- Layout ---------------- */
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const drawerWidth = isSidebarOpen ? 240 : 64;
 
   const toggleDrawer = () => setIsSidebarOpen((prev) => !prev);
+  const handleBack = () => navigate("/employee"); // Back handler
 
   /* ---------------- Header Menu ---------------- */
   const [anchorEl, setAnchorEl] = useState(null);
@@ -259,9 +264,27 @@ const AddEmployee = () => {
               borderRadius: 4,
             }}
           >
-            <Typography variant="h4" fontWeight="800" textAlign="center" mb={1}>
-              Add New Employee
-            </Typography>
+            <Box sx={{ position: "relative", mb: 4, textAlign: "center" }}>
+              <IconButton
+                onClick={handleBack}
+                sx={{
+                  position: "absolute",
+                  left: 0,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  bgcolor: theme.palette.primary.main,
+                  color: "white",
+                  "&:hover": {
+                    bgcolor: theme.palette.primary.dark,
+                  },
+                }}
+              >
+                <ArrowBackIcon />
+              </IconButton>
+              <Typography variant="h4" fontWeight="800" textAlign="center">
+                Add New Employee
+              </Typography>
+            </Box>
 
             <Typography textAlign="center" mb={4}>
               Enter the details below to register a new employee
